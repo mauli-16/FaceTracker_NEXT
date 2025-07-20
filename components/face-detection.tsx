@@ -11,9 +11,7 @@ export default function FaceDetection() {
   const recordedChunksRef = useRef<Blob[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [downloadLink, setDownloadLink] = useState<string | null>(null);
 
-  
   useEffect(() => {
     loadModels().then(() => {
       navigator.mediaDevices
@@ -27,7 +25,6 @@ export default function FaceDetection() {
     });
   }, []);
 
-  
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
@@ -59,17 +56,24 @@ export default function FaceDetection() {
       faceapi.draw.drawFaceExpressions(canvas, resized);
     };
 
-    intervalId = setInterval(detectFaces, 100); // every 100ms
+    intervalId = setInterval(detectFaces, 100);
 
     return () => clearInterval(intervalId);
   }, []);
 
- 
   const startRecording = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const stream = canvas.captureStream(30); // 30 FPS
+    // Cleanup previous recording
+    if (videoUrl) {
+      URL.revokeObjectURL(videoUrl);
+      setVideoUrl(null);
+    }
+
+    recordedChunksRef.current = [];
+
+    const stream = canvas.captureStream(30);
     const recorder = new MediaRecorder(stream, { mimeType: "video/webm" });
 
     recorder.ondataavailable = (e) => {
@@ -84,24 +88,13 @@ export default function FaceDetection() {
       setVideoUrl(url);
     };
 
-    recordedChunksRef.current = [];
     recorder.start();
     mediaRecorderRef.current = recorder;
     setIsRecording(true);
   };
 
-
   const stopRecording = () => {
-    if (mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(recordedChunksRef.current, {
-          type: "video/webm",
-        });
-        const url = URL.createObjectURL(blob);
-        setDownloadLink(url);
-      };
-    }
+    mediaRecorderRef.current?.stop();
     setIsRecording(false);
   };
 
@@ -138,25 +131,26 @@ export default function FaceDetection() {
           </button>
         )}
       </div>
-      {downloadLink && (
-        <a
-          href={downloadLink}
-          download="recorded-video.webm"
-          className="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-        >
-          Download Video
-        </a>
-      )}
 
       {videoUrl && (
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold">Recorded Video:</h2>
-          <video
-            src={videoUrl}
-            controls
-            className="mt-2 border border-gray-400"
-          />
-        </div>
+        <>
+          <a
+            href={videoUrl}
+            download="recorded-video.webm"
+            className="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Download Video
+          </a>
+
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold">Recorded Video:</h2>
+            <video
+              src={videoUrl}
+              controls
+              className="mt-2 border border-gray-400"
+            />
+          </div>
+        </>
       )}
     </div>
   );
