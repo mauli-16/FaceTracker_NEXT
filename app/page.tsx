@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 import FaceDetection from "@/components/face-detection";
 export default function Home() {
   return (

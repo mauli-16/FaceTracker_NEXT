@@ -26,8 +26,6 @@ export default function FaceDetection() {
   }, []);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
     const detectFaces = async () => {
       if (!videoRef.current || !canvasRef.current) return;
 
@@ -56,7 +54,7 @@ export default function FaceDetection() {
       faceapi.draw.drawFaceExpressions(canvas, resized);
     };
 
-    intervalId = setInterval(detectFaces, 100);
+    const intervalId = setInterval(detectFaces, 1000); // Changed from let to const
 
     return () => clearInterval(intervalId);
   }, []);
@@ -100,61 +98,60 @@ export default function FaceDetection() {
 
   return (
     <div className="p-4">
-  <div className="relative w-full max-w-[640px] aspect-video mx-auto">
-    <video
-      ref={videoRef}
-      autoPlay
-      muted
-      playsInline
-      className="absolute top-0 left-0 w-full h-full z-0 object-cover"
-    />
-    <canvas
-      ref={canvasRef}
-      className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
-    />
-  </div>
-
-  <div className="mt-4 flex flex-wrap gap-4 justify-center">
-    {!isRecording ? (
-      <button
-        onClick={startRecording}
-        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-      >
-        Start Recording
-      </button>
-    ) : (
-      <button
-        onClick={stopRecording}
-        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-      >
-        Stop Recording
-      </button>
-    )}
-  </div>
-
-  {videoUrl && (
-    <>
-      <div className="mt-6 text-center">
-        <a
-          href={videoUrl}
-          download="recorded-video.webm"
-          className="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
-        >
-          Download Video
-        </a>
-      </div>
-
-      <div className="mt-6 max-w-[640px] w-full mx-auto">
-        <h2 className="text-lg font-semibold mb-2 text-center">Recorded Video:</h2>
+      <div className="relative w-full max-w-[640px] aspect-video mx-auto">
         <video
-          src={videoUrl}
-          controls
-          className="w-full border border-gray-400 rounded"
+          ref={videoRef}
+          autoPlay
+          muted
+          playsInline
+          className="absolute top-0 left-0 w-full h-full z-0 object-cover"
+        />
+        <canvas
+          ref={canvasRef}
+          className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
         />
       </div>
-    </>
-  )}
-</div>
 
+      <div className="mt-4 flex flex-wrap gap-4 justify-center">
+        {!isRecording ? (
+          <button
+            onClick={startRecording}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+          >
+            Start Recording
+          </button>
+        ) : (
+          <button
+            onClick={stopRecording}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Stop Recording
+          </button>
+        )}
+      </div>
+
+      {videoUrl && (
+        <>
+          <div className="mt-6 text-center">
+            <a
+              href={videoUrl}
+              download="recorded-video.webm"
+              className="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+            >
+              Download Video
+            </a>
+          </div>
+
+          <div className="mt-6 max-w-[640px] w-full mx-auto">
+            <h2 className="text-lg font-semibold mb-2 text-center">Recorded Video:</h2>
+            <video
+              src={videoUrl}
+              controls
+              className="w-full border border-gray-400 rounded"
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 }
