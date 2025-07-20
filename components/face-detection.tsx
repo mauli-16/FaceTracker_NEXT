@@ -43,6 +43,8 @@ export default function FaceDetection() {
 
         canvas.getContext("2d")?.clearRect(0,0,canvas.width,canvas.height);
         faceapi.draw.drawDetections(canvas,resizedDetections)
+        
+
         //nsole.log("Detection Result:", result);
       }
     };
