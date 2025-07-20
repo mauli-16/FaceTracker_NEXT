@@ -100,58 +100,61 @@ export default function FaceDetection() {
 
   return (
     <div className="p-4">
-      <div className="relative w-[640px] h-[480px]">
+  <div className="relative w-full max-w-[640px] aspect-video mx-auto">
+    <video
+      ref={videoRef}
+      autoPlay
+      muted
+      playsInline
+      className="absolute top-0 left-0 w-full h-full z-0 object-cover"
+    />
+    <canvas
+      ref={canvasRef}
+      className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+    />
+  </div>
+
+  <div className="mt-4 flex flex-wrap gap-4 justify-center">
+    {!isRecording ? (
+      <button
+        onClick={startRecording}
+        className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+      >
+        Start Recording
+      </button>
+    ) : (
+      <button
+        onClick={stopRecording}
+        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+      >
+        Stop Recording
+      </button>
+    )}
+  </div>
+
+  {videoUrl && (
+    <>
+      <div className="mt-6 text-center">
+        <a
+          href={videoUrl}
+          download="recorded-video.webm"
+          className="inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+        >
+          Download Video
+        </a>
+      </div>
+
+      <div className="mt-6 max-w-[640px] w-full mx-auto">
+        <h2 className="text-lg font-semibold mb-2 text-center">Recorded Video:</h2>
         <video
-          ref={videoRef}
-          autoPlay
-          muted
-          playsInline
-          className="absolute top-0 left-0 w-full h-full z-0"
-        />
-        <canvas
-          ref={canvasRef}
-          className="absolute top-0 left-0 w-full h-full z-10 pointer-events-none"
+          src={videoUrl}
+          controls
+          className="w-full border border-gray-400 rounded"
         />
       </div>
+    </>
+  )}
+</div>
 
-      <div className="mt-4 space-x-4">
-        {!isRecording ? (
-          <button
-            onClick={startRecording}
-            className="px-4 py-2 bg-green-600 text-white rounded"
-          >
-            Start Recording
-          </button>
-        ) : (
-          <button
-            onClick={stopRecording}
-            className="px-4 py-2 bg-red-600 text-white rounded"
-          >
-            Stop Recording
-          </button>
-        )}
-      </div>
-
-      {videoUrl && (
-        <>
-          <a
-            href={videoUrl}
-            download="recorded-video.webm"
-            className="mt-4 inline-block px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Download Video
-          </a>
-
-          <div className="mt-6">
-            <h2 className="text-lg font-semibold">Recorded Video:</h2>
-            <video
-              src={videoUrl}
-              controls
-              className="mt-2 border border-gray-400"
-            />
-          </div>
-        </>
-      )}
-    </div>
   );
 }
